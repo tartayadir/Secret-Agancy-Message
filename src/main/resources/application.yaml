@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: Crypto Service
+  jpa:
+    database: MYSQL
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+  datasource:
+      url: mysql://localhost:3306/mydatabase
+      username: myuser
+      password: secret
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
