@@ -6,13 +6,13 @@ import java.time.LocalDateTime;
 
 public interface MessageService {
 
-    Message findById(Long id);
+    Message findById(String id);
 
     Message save(Message message);
 
     Message update(Message message);
 
-    void deleteMessageById(Long id);
+    void deleteMessageById(String id);
 
     void deleteOldMessages(LocalDateTime cutoffTime);
 

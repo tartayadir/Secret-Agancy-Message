@@ -4,6 +4,7 @@ import com.tartayadir.cryptoservice.domain.message.Message;
 import com.tartayadir.cryptoservice.repository.MessageRepository;
 import com.tartayadir.cryptoservice.service.MessageService;
 import com.tartayadir.cryptoservice.exception.MessageNotFoundException;
+import com.tartayadir.cryptoservice.util.SecureRandomString;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
 
     @Override
-    public Message findById(Long id) {
+    public Message findById(String id) {
         return messageRepository
                 .findById(id)
                 .orElseThrow(() -> getMessageNotFoundException(id));
@@ -26,6 +27,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Message save(Message message) {
+        message.setId(SecureRandomString.generate());
         log.info("Saving new message");
         return messageRepository.save(message);
     }
@@ -42,7 +44,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void deleteMessageById(Long id) {
+    public void deleteMessageById(String id) {
         checkExistence(id);
         log.info("Deleting message with id {}", id);
         messageRepository.deleteById(id);
@@ -60,12 +62,12 @@ public class MessageServiceImpl implements MessageService {
         deleteOldMessages(cutoffTime);
     }
 
-    private Message checkExistence(Long id) {
+    private Message checkExistence(String id) {
         return messageRepository.findById(id)
                 .orElseThrow(() -> getMessageNotFoundException(id));
     }
 
-    private static MessageNotFoundException getMessageNotFoundException(Long id) {
+    private static MessageNotFoundException getMessageNotFoundException(String id) {
         log.error("Message with id {} not found", id);
         return new MessageNotFoundException("Message with id " + id + " not found");
     }

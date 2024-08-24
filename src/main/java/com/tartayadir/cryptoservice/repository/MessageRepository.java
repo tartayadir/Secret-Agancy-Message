@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
-public interface MessageRepository extends JpaRepository<Message, Long> {
+public interface MessageRepository extends JpaRepository<Message, String> {
 
     @Override
-    Optional<Message> findById(Long id);
+    Optional<Message> findById(String id);
 
     @Override
     <S extends Message> S save(S entity);
@@ -22,10 +22,10 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Modifying
     @Transactional
     @Query("UPDATE Message m SET m.encryptedMessage = :encryptedMessage, m.retries = :retries WHERE m.id = :id")
-    int updateMessage(Long id, String encryptedMessage, int retries);
+    int updateMessage(String id, String encryptedMessage, int retries);
 
     @Override
-    void deleteById(Long id);
+    void deleteById(String id);
 
     @Modifying
     @Transactional

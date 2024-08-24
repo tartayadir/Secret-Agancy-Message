@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: yaroslav.b
+      changes:
+        - modifyDataType:
+            tableName: message
+            columnName: id
+            newDataType: CHAR(32)
+
+        - addDefaultValue:
+            tableName: message
+            columnName: create_time
+            defaultValueComputed: CURRENT_TIMESTAMP

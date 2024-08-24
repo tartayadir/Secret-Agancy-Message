@@ -1,6 +1,6 @@
 package com.tartayadir.cryptoservice.domain;
 
-import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
@@ -17,8 +17,9 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public class CoreEntity implements java.io.Serializable {
     @Id
-    @GeneratedValue
-    private Long id;
+    @Column(updatable = false)
+    private String id;
 
+    @Column(insertable = false, updatable = false)
     private LocalDateTime createTime;
 }

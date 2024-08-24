@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
      file: db/changelog/001-create-message.yaml
+  - include:
+      file: db/changelog/002-add-uuid-and-createTime-default.yaml
