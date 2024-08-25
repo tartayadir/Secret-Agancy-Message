@@ -10,7 +10,7 @@ import lombok.Setter;
 @Entity
 public class Message extends CoreEntity {
 
-    private String encryptedMessage;
+    private String encryptedMessage;//TODO Rename to message
 
     private int retries;
 }

@@ -8,6 +8,8 @@ public interface MessageService {
 
     Message findById(String id);
 
+    String getEncryptedMessage(String id, String key);
+
     Message save(Message message);
 
     Message update(Message message);

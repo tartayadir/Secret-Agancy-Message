@@ -1,7 +1,11 @@
 package com.tartayadir.cryptoservice.service.impl;
 
+import com.tartayadir.cryptoservice.domain.message.EncryptedMassage;
 import com.tartayadir.cryptoservice.domain.message.Message;
+import com.tartayadir.cryptoservice.exception.DecryptionAttemptsReachedException;
+import com.tartayadir.cryptoservice.exception.EncryptionOperationException;
 import com.tartayadir.cryptoservice.repository.MessageRepository;
+import com.tartayadir.cryptoservice.service.CryptoService;
 import com.tartayadir.cryptoservice.service.MessageService;
 import com.tartayadir.cryptoservice.exception.MessageNotFoundException;
 import com.tartayadir.cryptoservice.util.SecureRandomString;
@@ -9,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.security.*;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -17,6 +22,9 @@ import java.time.LocalDateTime;
 public class MessageServiceImpl implements MessageService {
     
     private final MessageRepository messageRepository;
+    private final CryptoService cryptoService;
+
+    private static final int MAX_DECRYPTION_ATTEMPTS = 3;
 
     @Override
     public Message findById(String id) {
@@ -25,18 +33,54 @@ public class MessageServiceImpl implements MessageService {
                 .orElseThrow(() -> getMessageNotFoundException(id));
     }
 
+    public String getEncryptedMessage(String id, String key) {
+        Message message = findById(id);
+        String encryptedMessage = message.getEncryptedMessage();
+
+        try {
+            return cryptoService.decrypt(encryptedMessage, key);
+        } catch (GeneralSecurityException e) {
+            log.error("Error during message decryption while getting message", e);
+
+            int decryptionAttemptsCounter = message.getRetries();
+            message.setRetries(++decryptionAttemptsCounter);
+            update(message);
+            deleteMessageById(id);
+
+            if (decryptionAttemptsCounter >= MAX_DECRYPTION_ATTEMPTS) {
+                log.info("Message decryption attempts reached, message with id {} will be deleted.", message.getId());
+                throw new EncryptionOperationException(e.getMessage(), e);
+            } else {
+                throw new DecryptionAttemptsReachedException();
+            }
+        }
+    }
+
     @Override
     public Message save(Message message) {
         message.setId(SecureRandomString.generate());
-        log.info("Saving new message");
-        return messageRepository.save(message);
+
+        try {
+            log.info("Saving new message");
+
+            String key = cryptoService.generateKey();
+            String encryptedMessage = cryptoService.encrypt(message.getEncryptedMessage(), key);
+            message.setEncryptedMessage(encryptedMessage);
+
+            Message savedMessage = messageRepository.save(message);
+            return new EncryptedMassage(savedMessage, key);
+
+        } catch (GeneralSecurityException e) {
+            String errorMessage = e.getMessage();
+            log.error("Error during encryption operation while saving message", e);
+            throw new EncryptionOperationException(errorMessage, e);
+        }
     }
 
     @Override
     public Message update(Message message) {
         Message existingMessage = checkExistence(message.getId());
 
-        existingMessage.setEncryptedMessage(message.getEncryptedMessage());
         existingMessage.setRetries(message.getRetries());
 
         log.info("Updating message with id {}", message.getId());
