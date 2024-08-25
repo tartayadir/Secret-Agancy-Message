@@ -18,13 +18,17 @@ public class CryptoServiceImpl implements CryptoService {
     private static final int IV_SIZE = 12;   // 12 bytes for GCM IV
     private static final int TAG_SIZE = 128; // 128 bits authentication tag length
 
+    private static final String ENCRYPTION_ALGORITHM = "AES";
+    private static final String PROVIDER_NAME = "BC";
+    private static final String TRANSFORMATION = "AES/GCM/NoPadding";
+
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
 
     @Override
     public String generateKey() throws NoSuchAlgorithmException, NoSuchProviderException {
-        KeyGenerator keyGen = KeyGenerator.getInstance("AES", "BC");
+        KeyGenerator keyGen = KeyGenerator.getInstance(ENCRYPTION_ALGORITHM, PROVIDER_NAME);
         keyGen.init(KEY_SIZE, new SecureRandom());
         SecretKey secretKey = keyGen.generateKey();
         return Base64.getEncoder().encodeToString(secretKey.getEncoded());
@@ -33,14 +37,14 @@ public class CryptoServiceImpl implements CryptoService {
     @Override
     public String encrypt(String message, String key) throws NoSuchAlgorithmException, NoSuchProviderException,
             NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION, PROVIDER_NAME);
 
         byte[] iv = new byte[IV_SIZE];
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(iv);
 
         GCMParameterSpec gcmSpec = new GCMParameterSpec(TAG_SIZE, iv);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(Base64.getDecoder().decode(key), "AES");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(Base64.getDecoder().decode(key), ENCRYPTION_ALGORITHM);
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, gcmSpec);
 
         byte[] cipherText = cipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
@@ -55,14 +59,14 @@ public class CryptoServiceImpl implements CryptoService {
     @Override
     public String decrypt(String encryptedMessage, String key) throws NoSuchAlgorithmException, NoSuchProviderException,
             NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION, PROVIDER_NAME);
 
         byte[] combinedIvAndCipherText = Base64.getDecoder().decode(encryptedMessage);
         byte[] iv = new byte[IV_SIZE];
         System.arraycopy(combinedIvAndCipherText, 0, iv, 0, IV_SIZE);
 
         GCMParameterSpec gcmSpec = new GCMParameterSpec(TAG_SIZE, iv);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(Base64.getDecoder().decode(key), "AES");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(Base64.getDecoder().decode(key), ENCRYPTION_ALGORITHM);
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, gcmSpec);
 
         byte[] cipherText = new byte[combinedIvAndCipherText.length - IV_SIZE];
