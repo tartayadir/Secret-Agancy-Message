@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   mysql:
     image: 'mysql:latest'
@@ -8,3 +9,28 @@ services:
       - 'MYSQL_USER=myuser'
     ports:
       - '3306:3306'
+
+  nats-server:
+    image: nats:latest
+    ports:
+      - "4222:4222"
+      - "8222:8222" #console
+    environment:
+      - 'NATS_SERVER_NAME=nats-server'
+      - 'NATS_USER=your-user'
+      - 'NATS_PASSWORD=your-password'
+
+  secret-agency-message-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql
+      - nats-server
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/mydatabase
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: secret
+      NATS_URL: nats://nats-server:4222
