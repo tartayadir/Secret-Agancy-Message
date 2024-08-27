@@ -9,24 +9,36 @@ services:
       - 'MYSQL_USER=myuser'
     ports:
       - '3306:3306'
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
+      timeout: 20s
+      retries: 10
 
   nats-server:
     image: nats:latest
     ports:
       - "4222:4222"
-      - "8222:8222" #console
+      - "8222:8222"
     environment:
       - 'NATS_SERVER_NAME=nats-server'
       - 'NATS_USER=your-user'
       - 'NATS_PASSWORD=your-password'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8222" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
 
   secret-agency-message-service:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: on-failure
     depends_on:
-      - mysql
-      - nats-server
+      mysql:
+        condition: service_healthy
+      nats-server:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
