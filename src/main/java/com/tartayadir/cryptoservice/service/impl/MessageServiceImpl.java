@@ -49,9 +49,10 @@ public class MessageServiceImpl implements MessageService {
 
             if (decryptionAttemptsCounter >= MAX_DECRYPTION_ATTEMPTS) {
                 log.info("Message decryption attempts reached, message with id {} will be deleted.", message.getId());
-                throw new EncryptionOperationException(e.getMessage(), e);
-            } else {
+
                 throw new DecryptionAttemptsReachedException();
+            } else {
+                throw new EncryptionOperationException(e.getMessage(), e);
             }
         }
     }
