@@ -7,9 +7,9 @@ spring:
     hibernate:
       ddl-auto: none
   datasource:
-      url: jdbc:mysql://mysql:3306/mydatabase
-      username: myuser
-      password: secret
+      url: ${SPRING_DATASOURCE_URL}
+      username: ${SPRING_DATASOURCE_USERNAME}
+      password: ${SPRING_DATASOURCE_PASSWORD}
       driver-class-name: com.mysql.cj.jdbc.Driver
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -19,4 +19,4 @@ spring:
       file: compose.yaml
 
 nats:
-  url: nats://nats-server:4222
+  url: ${NATS_URL}
