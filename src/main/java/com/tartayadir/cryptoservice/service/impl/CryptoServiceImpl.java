@@ -11,6 +11,15 @@ import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Base64;
 
+/**
+ * Implementation of the {@link CryptoService} interface using the AES encryption algorithm with GCM mode.
+ *
+ * <p>This implementation uses the Bouncy Castle cryptographic provider to ensure secure encryption and decryption
+ * of messages. The encryption key is generated, and messages are encrypted using the AES algorithm with GCM/NoPadding.</p>
+ *
+ * <p>The implementation handles key generation, message encryption, and decryption, ensuring that the cryptographic
+ * operations are performed according to best practices.</p>
+ */
 @Service
 public class CryptoServiceImpl implements CryptoService {
 
@@ -26,6 +35,9 @@ public class CryptoServiceImpl implements CryptoService {
         Security.addProvider(new BouncyCastleProvider());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String generateKey() throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyGenerator keyGen = KeyGenerator.getInstance(ENCRYPTION_ALGORITHM, PROVIDER_NAME);
@@ -34,6 +46,9 @@ public class CryptoServiceImpl implements CryptoService {
         return Base64.getEncoder().encodeToString(secretKey.getEncoded());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String encrypt(String message, String key) throws NoSuchAlgorithmException, NoSuchProviderException,
             NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
@@ -56,6 +71,9 @@ public class CryptoServiceImpl implements CryptoService {
         return Base64.getEncoder().encodeToString(combinedIvAndCipherText);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String decrypt(String encryptedMessage, String key) throws NoSuchAlgorithmException, NoSuchProviderException,
             NoSuchPaddingException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {

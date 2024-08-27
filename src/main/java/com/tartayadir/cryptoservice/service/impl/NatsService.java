@@ -16,15 +16,27 @@ import org.springframework.stereotype.Service;
 import static com.tartayadir.cryptoservice.mapper.MessageMapper.convertMessageToNATSMessage;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * The NatsService class handles communication between the crypto service and the NATS messaging server.
+ *
+ * <p>This service subscribes to NATS topics for saving and receiving messages, processes the messages using the
+ * provided {@link MessageService}, and responds back to the NATS server with the appropriate responses.</p>
+ *
+ * <p>Initialization of NATS subscriptions occurs after the service is constructed, ensuring that the service
+ * is ready to handle incoming messages.</p>
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class NatsService {
 
     private final Connection natsConnection;
-
     private final MessageService messageService;
 
+    /**
+     * Initializes the NATS service by setting up subscriptions to handle incoming messages.
+     * Subscribes to the "save.msg" and "receive.msg" topics for processing save and receive operations.
+     */
     @PostConstruct
     public void init() {
         Dispatcher dispatcher = natsConnection.createDispatcher(this::onMessage);
@@ -33,10 +45,20 @@ public class NatsService {
         dispatcher.subscribe("receive.msg", this::handleReceiveMessage);
     }
 
+    /**
+     * Processes incoming NATS messages generically.
+     *
+     * @param msg The incoming NATS message to process.
+     */
     private void onMessage(Message msg) {
-        //TODO verify method necessity and implement if so
+        // TODO verify method necessity and implement if so
     }
 
+    /**
+     * Handles the "save.msg" topic by saving the incoming message and returning an acknowledgment.
+     *
+     * @param msg The incoming NATS message containing the message to save.
+     */
     private void handleSaveMessage(Message msg) {
         processMessage(msg, () -> {
             String originalMessage = new String(msg.getData(), UTF_8);
@@ -49,6 +71,11 @@ public class NatsService {
         });
     }
 
+    /**
+     * Handles the "receive.msg" topic by retrieving and decrypting a message based on its ID and key.
+     *
+     * @param msg The incoming NATS message containing the ID and key for the message retrieval.
+     */
     private void handleReceiveMessage(Message msg) {
         processMessage(msg, () -> {
             String[] parts = new String(msg.getData(), UTF_8).split(":", 2);
@@ -68,6 +95,13 @@ public class NatsService {
         });
     }
 
+    /**
+     * Generic method for processing NATS messages using a {@link MessageProcessor}.
+     * Handles exceptions and sends appropriate error responses if necessary.
+     *
+     * @param msg The incoming NATS message to process.
+     * @param processor The processor function to handle the message.
+     */
     private void processMessage(Message msg, MessageProcessor processor) {
         try {
             if (msg.getReplyTo() == null) {

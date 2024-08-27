@@ -14,19 +14,30 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.security.*;
+import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 
+/**
+ * Implementation of the {@link MessageService} interface, providing concrete methods for handling secret messages.
+ *
+ * <p>This service includes logic for encryption and decryption of messages, tracking decryption attempts, and
+ * managing the lifecycle of messages (such as automatic deletion after retrieval or after a certain period).</p>
+ *
+ * <p>Scheduled tasks are also implemented to automatically delete messages that are older than a specified period (e.g., two days).</p>
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
-    
+
     private final MessageRepository messageRepository;
     private final CryptoService cryptoService;
 
     private static final int MAX_DECRYPTION_ATTEMPTS = 3;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Message findById(String id) {
         return messageRepository
@@ -34,6 +45,10 @@ public class MessageServiceImpl implements MessageService {
                 .orElseThrow(() -> getMessageNotFoundException(id));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getEncryptedMessage(String id, String key) {
         Message message = findById(id);
         String encryptedMessage = message.getEncryptedMessage();
@@ -62,6 +77,9 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Message save(Message message) {
         message.setId(SecureRandomString.generate());
@@ -83,6 +101,9 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Message update(Message message) {
         Message existingMessage = checkExistence(message.getId());
@@ -93,6 +114,9 @@ public class MessageServiceImpl implements MessageService {
         return messageRepository.save(existingMessage);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteMessageById(String id) {
         checkExistence(id);
@@ -100,12 +124,19 @@ public class MessageServiceImpl implements MessageService {
         messageRepository.deleteById(id);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteOldMessages(LocalDateTime cutoffTime) {
         log.info("Deleting messages older than {}", cutoffTime);
         messageRepository.deleteOldMessages(cutoffTime);
     }
 
+    /**
+     * Scheduled task that runs daily to delete all messages older than two days.
+     * This method ensures that expired messages are cleaned up automatically.
+     */
     @Scheduled(cron = "0 0 0 * * ?")
     public void deleteAllMessagesOlderThanTwoDays() {
         LocalDateTime cutoffTime = LocalDateTime.now().minusDays(2);
@@ -113,11 +144,24 @@ public class MessageServiceImpl implements MessageService {
         deleteOldMessages(cutoffTime);
     }
 
+    /**
+     * Checks whether a message with the given ID exists in the repository.
+     *
+     * @param id The ID of the message to check.
+     * @return The found Message.
+     * @throws MessageNotFoundException if the message is not found.
+     */
     private Message checkExistence(String id) {
         return messageRepository.findById(id)
                 .orElseThrow(() -> getMessageNotFoundException(id));
     }
 
+    /**
+     * Creates an exception to indicate that a message with the specified ID was not found.
+     *
+     * @param id The ID of the message that was not found.
+     * @return The MessageNotFoundException with a detailed error message.
+     */
     private static MessageNotFoundException getMessageNotFoundException(String id) {
         log.error("Message with id {} not found", id);
         return new MessageNotFoundException("Message with id " + id + " not found");
