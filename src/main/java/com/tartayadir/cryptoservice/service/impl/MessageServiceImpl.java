@@ -11,6 +11,7 @@ import com.tartayadir.cryptoservice.exception.MessageNotFoundException;
 import com.tartayadir.cryptoservice.util.SecureRandomString;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.security.*;
@@ -105,6 +106,7 @@ public class MessageServiceImpl implements MessageService {
         messageRepository.deleteOldMessages(cutoffTime);
     }
 
+    @Scheduled(cron = "0 0 0 * * ?")
     public void deleteAllMessagesOlderThanTwoDays() {
         LocalDateTime cutoffTime = LocalDateTime.now().minusDays(2);
         log.info("Deleting messages older than two days ({})", cutoffTime);
