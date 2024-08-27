@@ -51,3 +51,12 @@ hibernate {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+graalvmNative {
+    binaries {
+        main {
+            imageName = "secret-agency-message-service"
+        }
+    }
+}
+
