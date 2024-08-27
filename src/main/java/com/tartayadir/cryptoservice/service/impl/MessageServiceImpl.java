@@ -38,19 +38,23 @@ public class MessageServiceImpl implements MessageService {
         String encryptedMessage = message.getEncryptedMessage();
 
         try {
-            return cryptoService.decrypt(encryptedMessage, key);
+            String decryptedMessage = cryptoService.decrypt(encryptedMessage, key);
+            deleteMessageById(id);
+
+            return decryptedMessage;
         } catch (GeneralSecurityException e) {
             log.error("Error during message decryption while getting message", e);
 
             int decryptionAttemptsCounter = message.getRetries();
             message.setRetries(++decryptionAttemptsCounter);
             update(message);
-            deleteMessageById(id);
 
             if (decryptionAttemptsCounter >= MAX_DECRYPTION_ATTEMPTS) {
-                log.info("Message decryption attempts reached, message with id {} will be deleted.", message.getId());
+                deleteMessageById(id);
 
-                throw new DecryptionAttemptsReachedException();
+                String errorMassage = String.format("Message decryption attempts reached, message with id %s will be deleted.", message.getId());
+                log.info(errorMassage);
+                throw new DecryptionAttemptsReachedException("", e);
             } else {
                 throw new EncryptionOperationException(e.getMessage(), e);
             }
