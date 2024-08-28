@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: yaroslav.b
+      changes:
+        - modifyDataType:
+            tableName: message
+            columnName: encrypted_message
+            newDataType: TEXT
