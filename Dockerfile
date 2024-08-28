@@ -1,3 +1,6 @@
+#TODO fix issue described below
+#GraalVM support works properly except issue with finding executable native image
+
 ## Use GraalVM as the base image
 #FROM ghcr.io/graalvm/graalvm-ce:latest as graalvm
 #
@@ -33,13 +36,41 @@
 ## Run the native executable
 #CMD ["./secret-agency-message-service"]
 
-#TODO fix issue described below
-#GraalVM support works properly except issue with finding executable native image
+##########################################################
 
-FROM openjdk:17
-WORKDIR /my-project
-CMD ["./gradlew", "clean", "bootJar"]
-COPY build/libs/*.jar app.jar
+# Use an official OpenJDK Debian-based image as a base image
+FROM openjdk:17-slim AS build
 
-#EXPOSE 8080
+# Set the working directory inside the Docker image
+WORKDIR /app
+
+# Install xargs and other necessary utilities
+RUN apt-get update && apt-get install -y findutils
+
+# Copy the Gradle wrapper and related files
+COPY gradlew build.gradle settings.gradle /app/
+COPY gradle /app/gradle
+
+# Copy the application source code
+COPY src /app/src
+
+# Grant execution rights to the Gradle wrapper
+RUN chmod +x ./gradlew
+
+# Run the Gradle build to create the JAR file
+RUN ./gradlew clean build -x test
+
+# Use a smaller base image for the final application
+FROM openjdk:17-slim
+
+# Set the working directory inside the final Docker image
+WORKDIR /app
+
+# Copy the JAR file from the build stage
+COPY --from=build /app/build/libs/*.jar app.jar
+
+# Expose the application's port
+EXPOSE 8080
+
+# Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]

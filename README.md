@@ -47,6 +47,7 @@ Before starting the application, ensure you have the following installed:
 The application relies on several environment variables for configuration. Set these variables in your shell or in a `.env` file at the root of the project.
 
 ### Required Environment Variables
+All that are provided below can be use for tests 
 
 ```
 # MySQL Database Configuration
