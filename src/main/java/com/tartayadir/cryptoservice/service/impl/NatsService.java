@@ -33,6 +33,9 @@ public class NatsService {
     private final Connection natsConnection;
     private final MessageService messageService;
 
+    public static final String SAVE_MESSAGE_SUBJECT = "save.msg";
+    public static final String RECEIVE_MESSAGE_SUBJECT = "receive.msg";
+
     /**
      * Initializes the NATS service by setting up subscriptions to handle incoming messages.
      * Subscribes to the "save.msg" and "receive.msg" topics for processing save and receive operations.
@@ -41,8 +44,8 @@ public class NatsService {
     public void init() {
         Dispatcher dispatcher = natsConnection.createDispatcher(this::onMessage);
 
-        dispatcher.subscribe("save.msg", this::handleSaveMessage);
-        dispatcher.subscribe("receive.msg", this::handleReceiveMessage);
+        dispatcher.subscribe(SAVE_MESSAGE_SUBJECT, this::handleSaveMessage);
+        dispatcher.subscribe(RECEIVE_MESSAGE_SUBJECT, this::handleReceiveMessage);
     }
 
     /**

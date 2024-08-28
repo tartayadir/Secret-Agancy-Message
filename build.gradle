@@ -37,6 +37,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.testcontainers:testcontainers:1.19.0' // Ensure version is specified
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.0' // Ensure version is specified
+    testImplementation 'org.testcontainers:mysql:1.19.0' // Ensure version is specified
+    testImplementation 'org.awaitility:awaitility:4.0.3'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
@@ -59,4 +63,3 @@ graalvmNative {
         }
     }
 }
-
