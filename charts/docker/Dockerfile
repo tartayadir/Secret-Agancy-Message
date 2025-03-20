@@ -48,11 +48,11 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y findutils
 
 # Copy the Gradle wrapper and related files
-COPY gradlew build.gradle settings.gradle /app/
-COPY gradle /app/gradle
+COPY ../../gradlew build.gradle settings.gradle /app/
+COPY ../../gradle /app/gradle
 
 # Copy the application source code
-COPY src /app/src
+COPY ../../src /app/src
 
 # Grant execution rights to the Gradle wrapper
 RUN chmod +x ./gradlew

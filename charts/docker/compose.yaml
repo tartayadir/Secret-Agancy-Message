@@ -28,7 +28,7 @@ services:
     image: secret-agency-message-service-image
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: charts/docker/Dockerfile
     restart: on-failure
     depends_on:
       mysql:

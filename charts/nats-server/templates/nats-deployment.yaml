@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nats-server
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nats-server
+  template:
+    metadata:
+      labels:
+        app: nats-server
+    spec:
+      containers:
+        - name: nats
+          image: nats:latest
+          ports:
+            - containerPort: 4222
+            - containerPort: 8222
+          env:
+            - name: NATS_SERVER_NAME
+              value: "nats-server"
+            - name: NATS_USER
+              value: "natsuser"
+            - name: NATS_PASSWORD
+              value: "natspass"
