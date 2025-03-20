@@ -21,8 +21,17 @@ spec:
             - containerPort: 8222
           env:
             - name: NATS_SERVER_NAME
-              value: "nats-server"
+              valueFrom:
+                secretKeyRef:
+                  name: nats-secrets
+                  key: server-name
             - name: NATS_USER
-              value: "natsuser"
+              valueFrom:
+                secretKeyRef:
+                  name: nats-secrets
+                  key: user
             - name: NATS_PASSWORD
-              value: "natspass"
+              valueFrom:
+                secretKeyRef:
+                  name: nats-secrets
+                  key: password

@@ -20,13 +20,25 @@ spec:
             - containerPort: 3306
           env:
             - name: MYSQL_DATABASE
-              value: "mydatabase"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: database-name
             - name: MYSQL_USER
-              value: "user"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: user
             - name: MYSQL_PASSWORD
-              value: "password"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: password
             - name: MYSQL_ROOT_PASSWORD
-              value: "rootpassword"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: rootpassword
           readinessProbe:
             exec:
               command: ["mysqladmin", "ping", "-h", "127.0.0.1", "-u", "user", "--password=password"]
