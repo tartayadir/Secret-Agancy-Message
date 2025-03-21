@@ -1,0 +1,14 @@
+apiVersion: v2
+name: umbrella-chart
+description: Umbrella chart for microservice app with MySQL, NATS, and Secret Agency
+version: 0.1.0
+dependencies:
+  - name: mysql
+    version: 0.1.0
+    repository: "file://../mysql"
+  - name: nats
+    version: 0.1.0
+    repository: "file://../nats-server"
+  - name: secret-agency
+    version: 0.1.0
+    repository: "file://../secret-agency"

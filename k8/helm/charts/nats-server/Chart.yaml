@@ -1,0 +1,5 @@
+apiVersion: v2
+name: nats
+description: Helm chart for NATS server
+version: 0.1.0
+appVersion: "latest"

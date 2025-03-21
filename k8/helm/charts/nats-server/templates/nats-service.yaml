@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-nats-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: {{ .Release.Name }}-nats
+  ports:
+    - name: client
+      port: {{ .Values.service.ports.client }}
+      targetPort: {{ .Values.service.ports.client }}
+    - name: monitoring
+      port: {{ .Values.service.ports.monitoring }}
+      targetPort: {{ .Values.service.ports.monitoring }}
+  type: {{ .Values.service.type }}
