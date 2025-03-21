@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-nats
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-nats
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-nats
+    spec:
+      containers:
+        - name: nats
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.ports.client }}
+            - containerPort: {{ .Values.service.ports.monitoring }}
+          env:
+            - name: NATS_SERVER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-nats-secrets
+                  key: server-name
+            - name: NATS_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-nats-secrets
+                  key: user
+            - name: NATS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-nats-secrets
+                  key: password
