@@ -8,7 +8,7 @@ service:
   ports:
     client: 4222
     monitoring: 8222
-namespace: default
+namespace: secret-agency
 
 secrets:
   serverName: "nats-server"

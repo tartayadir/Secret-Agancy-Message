@@ -6,15 +6,15 @@ image:
 service:
   type: LoadBalancer
   port: 8080
-namespace: default
+namespace: secret-agency
 
 dependencies:
-  mysqlServiceName: "mysql-service"
-  natsServiceName: "nats-service"
+  mysqlServiceName: "secret-agency-mysql-service"
+  natsServiceName: "secret-agency-nats-service"
 
 secrets:
   spring:
-    datasourceUrl: "jdbc:mysql://mysql-service:3306/mydb"
+    datasourceUrl: "jdbc:mysql://secret-agency-mysql-service.secret-agency.svc.cluster.local:3306/mydb"
     datasourceUser: "user"
     datasourcePassword: "password"
-    natsUrl: "nats://nats-service:4222"
+    natsUrl: "nats://secret-agency-nats-service:4222"

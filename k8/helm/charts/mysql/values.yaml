@@ -10,8 +10,9 @@ persistence:
   enabled: true
   size: "100Mi"
   existingClaim: false
-namespace: default
+namespace: secret-agency
 
+#TODO replace with auto generated secret
 secrets:
   database: "mydb"
   user: "user"
