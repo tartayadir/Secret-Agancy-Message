@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-nginx-tcp
+  namespace: ingress-nginx
+data:
+  "3306": "secret-agency/secret-agency-mysql-service:3306"
+  "4222": "secret-agency/secret-agency-nats-service:4222"
+  "8222": "secret-agency/secret-agency-nats-service:8222"

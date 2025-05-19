@@ -1,13 +1,13 @@
 apiVersion: v2
-name: secret-agancy-service
+name: secret-agency-service
 description: A Helm chart for Secret agency message service app
 version: 0.1.0
 dependencies:
   - name: nats
-    version: "2.11.3"
+    version: "0.1.0"
     repository: "file://charts/nats-server"
   - name: mysql
-    version: "9.x.x"
+    version: "0.1.0"
     repository: "file://charts/mysql"
     condition: mysql.enabled
   - name: secret-agency

@@ -1,3 +1,77 @@
-nats: {}
-mysql: {}
-javaApp: {}
+namespace: secret-agency
+
+mysql:
+  replicaCount: 1
+  image:
+    repository: mysql
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3306
+    protocol: TCP
+  persistence:
+    enabled: true
+    size: "100Mi"
+    existingClaim: false
+  namespace: secret-agency
+  secrets:
+    database: "mydb"
+    user: "user"
+    password: "password"
+    rootpassword: "rootpassword"
+
+nats:
+  replicaCount: 1
+  image:
+    repository: nats
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    ports:
+      client: 4222
+      monitoring: 8222
+      websocket: 9222
+  namespace: secret-agency
+
+  secrets:
+    serverName: "nats-server"
+    user: "natsuser"
+    password: "natspass"
+
+secret-agency:
+  namespace: secret-agency
+  dependencies:
+    mysqlServiceName: "secret-agency-mysql-service"
+    natsServiceName: "secret-agency-nats-service"
+  secrets:
+    spring:
+      datasourceUrl: "jdbc:mysql://secret-agency-mysql-service.secret-agency.svc.cluster.local:3306/mydb"
+      datasourceUser: "user"
+      datasourcePassword: "password"
+      natsUrl: "nats://secret-agency-nats-service:4222"
+  enabled: true
+  service:
+    port: 8080
+    type: ClusterIP
+  ingress:
+    enabled: true
+    host: app.api.your-domain.com
+    tls:
+      enabled: true
+  image:
+    repository: secret-agency-message-service-image
+    tag: "latest"
+    pullPolicy: Never
+  replicaCount: 1
+  readinessProbe:
+    enabled: true
+    type: tcpSocket
+    host: secret-agency-mysql-service.secret-agency.svc.cluster.local
+    port: 3306
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 2
+    successThreshold: 1
+    failureThreshold: 3
