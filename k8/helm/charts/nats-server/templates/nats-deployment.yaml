@@ -19,7 +19,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.ports.client }}
+              name: client
             - containerPort: {{ .Values.service.ports.monitoring }}
+              name: monitoring
+            - containerPort: {{ .Values.service.ports.websocket }}
+              name: websocket
           env:
             - name: NATS_SERVER_NAME
               valueFrom:
@@ -36,3 +40,14 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-nats-secrets
                   key: password
+          args:
+            - "--config"
+            - "/etc/nats/nats.conf"
+          volumeMounts:
+            - name: nats-config
+              mountPath: /etc/nats
+              readOnly: true
+      volumes:
+        - name: nats-config
+          configMap:
+            name: {{ .Release.Name }}-nats-config

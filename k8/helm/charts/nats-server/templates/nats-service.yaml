@@ -10,7 +10,13 @@ spec:
     - name: client
       port: {{ .Values.service.ports.client }}
       targetPort: {{ .Values.service.ports.client }}
+      protocol: TCP
     - name: monitoring
       port: {{ .Values.service.ports.monitoring }}
       targetPort: {{ .Values.service.ports.monitoring }}
+      protocol: TCP
+    - name: websocket
+      port: {{ .Values.service.ports.websocket }}
+      targetPort: {{ .Values.service.ports.websocket }}
+      protocol: TCP
   type: {{ .Values.service.type }}

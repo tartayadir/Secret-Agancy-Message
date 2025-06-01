@@ -42,7 +42,14 @@ spec:
                   key: rootpassword
           readinessProbe:
             exec:
-              command: ["mysqladmin", "ping", "-h", "127.0.0.1", "-u", "{{ .Values.secrets.user }}", "--password={{ .Values.secrets.password }}"]
+              command:
+                - mysqladmin
+                - ping
+                - -h
+                - 127.0.0.1
+                - -u
+                - {{ .Values.secrets.user | quote }}
+                - --password={{ include "db.user-password" . | quote }}
             initialDelaySeconds: 5
             timeoutSeconds: 20
             failureThreshold: 10
