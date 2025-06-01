@@ -1,7 +1,5 @@
 #!/bin/bash
-
 set -e  # Останавливаем выполнение при любой ошибке
-
 # Проверка текущей директории
 if [ ! -d "./k8/helm" ]; then
   echo "❌ Error: Directory './k8/helm' not found. Please run this script from the project root directory."
@@ -104,6 +102,8 @@ echo "
 ⚠️  Port forwarding is running in the background. To stop it, run:
    pkill -f \"kubectl port-forward\"
 "
+
+# helm uninstall secret-agency --namespace secret-agency
 
 ## Check if port forwards are running
 #echo "🔍 Verifying port forwards..."

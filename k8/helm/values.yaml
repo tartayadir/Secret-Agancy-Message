@@ -18,8 +18,6 @@ mysql:
   secrets:
     database: "mydb"
     user: "user"
-    password: "password"
-    rootpassword: "rootpassword"
 
 nats:
   replicaCount: 1
@@ -38,7 +36,6 @@ nats:
   secrets:
     serverName: "nats-server"
     user: "natsuser"
-    password: "natspass"
 
 secret-agency:
   namespace: secret-agency
@@ -48,8 +45,6 @@ secret-agency:
   secrets:
     spring:
       datasourceUrl: "jdbc:mysql://secret-agency-mysql-service.secret-agency.svc.cluster.local:3306/mydb"
-      datasourceUser: "user"
-      datasourcePassword: "password"
       natsUrl: "nats://secret-agency-nats-service:4222"
   enabled: true
   service:
