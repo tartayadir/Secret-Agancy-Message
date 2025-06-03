@@ -1,26 +1,31 @@
 import React from 'react';
+import Header from './components/Header';
+import Footer from './components/Footer';
 import CreateSecretForm from './components/CreateSecretForm';
 import ReceiveSecretForm from './components/ReceiveSecretForm';
 import NatConnectionStatus from './components/NatConnectionStatus';
-import { useNats } from './hooks/useNats'; // Import directly for App to use
-import './styles.css';
+import { useNats, NatsStatus } from './hooks/useNats';
 
 function App() {
-  // Initialize useNats here so status is available at App level
-  // Components will also call useNats, React context behavior ensures they share the same instance if provider is used,
-  // or they get their own instance. For this simple app, direct use is fine, or wrap with a Provider.
-  // For this example, let's assume each major component section gets its own hook instance,
-  // but status display will use one instance from App.
-  const { natsStatus, connectToNats } = useNats();
+    const { natsStatus, connectToNats } = useNats();
 
-  return (
-      <div className="App">
-        <h1>Self-Destructing Secret Agency Message Service [cite: 1]</h1>
-        <NatConnectionStatus status={natsStatus} onReconnect={connectToNats} />
-        <CreateSecretForm />
-        <ReceiveSecretForm />
-      </div>
-  );
+    return (
+        <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100">
+            <Header />
+
+            <main className="flex-grow container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+
+                <NatConnectionStatus status={natsStatus} onReconnect={connectToNats} />
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 lg:gap-12">
+                    <CreateSecretForm />
+                    <ReceiveSecretForm />
+                </div>
+            </main>
+
+            <Footer />
+        </div>
+    );
 }
 
 export default App;
