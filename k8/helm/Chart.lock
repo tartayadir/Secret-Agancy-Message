@@ -1,0 +1,12 @@
+dependencies:
+- name: nats
+  repository: file://charts/nats-server
+  version: 0.1.0
+- name: mysql
+  repository: file://charts/mysql
+  version: 0.1.0
+- name: secret-agency
+  repository: file://charts/secret-agency
+  version: 0.1.0
+digest: sha256:452e0096d1e77e10b8fad35503f10361b49639b3f79932a73da101fef59f4000
+generated: "2025-05-16T01:24:05.0935273+02:00"
