@@ -70,3 +70,22 @@ secret-agency:
     timeoutSeconds: 2
     successThreshold: 1
     failureThreshold: 3
+
+frontend:
+  namespace: secret-agency
+  replicaCount: 1
+  image:
+    repository: secret-agency-message-service-ui-image
+    tag: "latest"
+    pullPolicy: Never
+  service:
+    type: ClusterIP
+    port: 80
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  config:
+    REACT_APP_NATS_URL: "ws://secret-agency-nats-service:9222"
+    env: { }
