@@ -13,3 +13,6 @@ dependencies:
   - name: secret-agency
     version: "0.1.0"
     repository: "file://charts/secret-agency"
+  - name: frontend
+    version: "0.1.0"
+    repository: "file://charts/frontend"
